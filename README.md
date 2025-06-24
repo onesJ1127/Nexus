@@ -4,6 +4,7 @@ F12打开控制台，底部输入命令即可
 ![image](https://github.com/user-attachments/assets/1617c004-390a-4292-8787-670e7de16a37)
 
 命令脚本：
+
 (function ensureVPNAlwaysOn() {
   const buttonId = 'connect-toggle-button';
 

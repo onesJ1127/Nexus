@@ -17,32 +17,39 @@ Nexus网页端自动检测按钮
   function isButtonEnabled(button) {
     if (!button) return false;
     const slider = button.querySelector('div');
-    // 判断 translate-x 是否是靠右（开启状态）
     const classList = slider?.className || '';
     return classList.includes('translate-x-[24px]') || classList.includes('translate-x-[28px]');
   }
 
   function triggerRealClick(el) {
-    const event = new MouseEvent('click', {
-      view: window,
-      bubbles: true,
-      cancelable: true
+    ['pointerdown', 'pointerup', 'click'].forEach(type => {
+      el.dispatchEvent(new MouseEvent(type, {
+        view: window,
+        bubbles: true,
+        cancelable: true
+      }));
     });
-    el.dispatchEvent(event);
   }
 
   function toggleIfNeeded() {
     const button = document.getElementById(buttonId);
     if (!button) {
-      console.warn('[VPN] 找不到开关按钮');
+      console.warn('[VPN] 找不到按钮');
       return;
     }
 
     if (!isButtonEnabled(button)) {
-      console.log('[VPN] 当前为关闭状态，尝试点击开启...');
+      console.log('[VPN] 状态关闭，尝试点击开启...');
       triggerRealClick(button);
     } else {
-      console.log('[VPN] 已经是开启状态');
+      console.log('[VPN] 状态显示为开启，继续检查后台连接状态...');
+    }
+
+    // 可选：检测连接状态 DOM
+    const connectedText = document.body.innerText.includes('Connected') || document.body.innerText.includes('已连接');
+    if (!connectedText) {
+      console.warn('[VPN] 看起来并未真正连接成功，尝试重新点击...');
+      triggerRealClick(button);
     }
   }
 
@@ -50,13 +57,14 @@ Nexus网页端自动检测按钮
     const checkReady = setInterval(() => {
       const btn = document.getElementById(buttonId);
       if (btn) {
-        console.log('[VPN] 找到按钮，开始监听开关状态...');
+        console.log('[VPN] 找到按钮，开始监测...');
         clearInterval(checkReady);
-        toggleIfNeeded(); // 初次尝试
-        setInterval(toggleIfNeeded, 2000); // 每2秒检查一次
+        toggleIfNeeded(); // 初次点击
+        setInterval(toggleIfNeeded, 3000); // 每 3 秒检查一次
       }
     }, 500);
   }
 
   waitForDomAndStart();
 })();
+

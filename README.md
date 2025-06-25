@@ -42,14 +42,7 @@ Nexus网页端自动检测按钮
       console.log('[VPN] 状态关闭，尝试点击开启...');
       triggerRealClick(button);
     } else {
-      console.log('[VPN] 状态显示为开启，继续检查后台连接状态...');
-    }
-
-    // 可选：检测连接状态 DOM
-    const connectedText = document.body.innerText.includes('Connected') || document.body.innerText.includes('已连接');
-    if (!connectedText) {
-      console.warn('[VPN] 看起来并未真正连接成功，尝试重新点击...');
-      triggerRealClick(button);
+      console.log('[VPN] 已开启，不再点击');
     }
   }
 
@@ -60,7 +53,7 @@ Nexus网页端自动检测按钮
         console.log('[VPN] 找到按钮，开始监测...');
         clearInterval(checkReady);
         toggleIfNeeded(); // 初次点击
-        setInterval(toggleIfNeeded, 3000); // 每 3 秒检查一次
+        setInterval(toggleIfNeeded, 5000); // 每 5 秒检查一次，避免频繁干扰
       }
     }, 500);
   }
